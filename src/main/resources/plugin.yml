@@ -1,5 +1,5 @@
 name: Accuracy
 main: com.darkender.plugins.accuracy.Accuracy
-version: ${project.version}
-author: Techdoodle
-api-version: 1.13
+version: 1.0.0
+author: Limitrious
+api-version: 1.21

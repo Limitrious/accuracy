@@ -15,113 +15,78 @@ import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-public class Accuracy extends JavaPlugin implements Listener
-{
+public class Accuracy extends JavaPlugin implements Listener {
     private Material crossbow = null;
     private Enchantment multishot = null;
-    
+
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
-        try
-        {
-            crossbow = Material.valueOf("CROSSBOW");
-            for(Enchantment enchantment : Enchantment.values())
-            {
-                if(enchantment.getKey().getNamespace().equals("minecraft") && enchantment.getKey().getKey().equals("multishot"))
-                {
-                    multishot = enchantment;
-                }
-            }
-        }
-        catch(Exception e)
-        {
+        try {
+            crossbow = Material.CROSSBOW;
+            multishot = Enchantment.MULTISHOT;
+        } catch (Exception e) {
             crossbow = null;
             multishot = null;
         }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onProjectileFire(ProjectileLaunchEvent event)
-    {
+    public void onProjectileFire(ProjectileLaunchEvent event) {
         ProjectileSource source = event.getEntity().getShooter();
-        if(source instanceof Player)
-        {
-            Player p = (Player) source;
-            
-            // Treat multishot crossbows specially
-            // This event gets called once for each arrow
-            if(isMultishotCrossbow(p.getInventory().getItemInMainHand()) || isMultishotCrossbow(p.getInventory().getItemInOffHand()))
-            {
-                Vector velocityDirection = event.getEntity().getVelocity().clone().normalize();
-                
-                // Get the unit vector coming out the top of the player's head
-                Vector head = getVectorFromPitch(p.getEyeLocation().getPitch() - 90.0F, p.getEyeLocation().getYaw()).normalize();
-                
-                // Rotate around the head vector to get the left and right positions
-                Vector right = p.getEyeLocation().getDirection().clone();
+        if (source instanceof Player) {
+            Player player = (Player) source;
+            if (isMultishotCrossbow(player.getInventory().getItemInMainHand()) || 
+                isMultishotCrossbow(player.getInventory().getItemInOffHand())) {
+
+                Vector velocityDirection = event.getEntity().getVelocity().normalize();
+                Vector head = getVectorFromPitch(
+                    player.getEyeLocation().getPitch() - 90.0F, 
+                    player.getEyeLocation().getYaw()
+                ).normalize();
+
+                Vector right = player.getEyeLocation().getDirection().clone();
                 OldVersionCompatibility.rotateAroundNonUnitAxis(right, head, -10 * (Math.PI / 180.0));
-                
                 double current = event.getEntity().getVelocity().length();
-                if(right.distanceSquared(velocityDirection) < 0.001)
-                {
+
+                if (right.distanceSquared(velocityDirection) < 0.001) {
                     event.getEntity().setVelocity(right.multiply(current));
-                }
-                else
-                {
-                    Vector left = p.getEyeLocation().getDirection().clone();
+                } else {
+                    Vector left = player.getEyeLocation().getDirection().clone();
                     OldVersionCompatibility.rotateAroundNonUnitAxis(left, head, 10 * (Math.PI / 180.0));
-                    if(left.distanceSquared(velocityDirection) < 0.001)
-                    {
+                    if (left.distanceSquared(velocityDirection) < 0.001) {
                         event.getEntity().setVelocity(left.multiply(current));
-                    }
-                    else
-                    {
-                        event.getEntity().setVelocity(p.getEyeLocation().getDirection().clone().multiply(current));
+                    } else {
+                        event.getEntity().setVelocity(player.getEyeLocation().getDirection().multiply(current));
                     }
                 }
+            } else {
+                fixVelocity(event.getEntity(), player.getEyeLocation().getDirection());
             }
-            else
-            {
-                fixVelocity(event.getEntity(), p.getEyeLocation().getDirection());
-            }
-        }
-        else if(source instanceof BlockProjectileSource)
-        {
-            // There's a better way to do this for sure
-            // Right now it's comparing the entity's block with the source block to form a normal vector
+        } else if (source instanceof BlockProjectileSource) {
             BlockFace face = ((BlockProjectileSource) source).getBlock().getFace(event.getEntity().getLocation().getBlock());
             fixVelocity(event.getEntity(), OldVersionCompatibility.getBlockFaceDirection(face));
         }
     }
-    
-    private Vector getVectorFromPitch(float pitch, float yaw)
-    {
-        double pitchRad = pitch * (Math.PI / 180);
-        double yawRad = -yaw * (Math.PI / 180);
-    
-        double cosYawRad = Math.cos(yawRad);
-        double sinYawRad = Math.sin(yawRad);
-        double cosPitchRad = Math.cos(pitchRad);
-        double sinPitchRad = Math.sin(pitchRad);
-    
-        return new Vector((sinYawRad * cosPitchRad), -sinPitchRad, (cosYawRad * cosPitchRad));
+
+    private Vector getVectorFromPitch(float pitch, float yaw) {
+        double pitchRad = Math.toRadians(pitch);
+        double yawRad = -Math.toRadians(yaw);
+        return new Vector(
+            Math.sin(yawRad) * Math.cos(pitchRad), 
+            -Math.sin(pitchRad), 
+            Math.cos(yawRad) * Math.cos(pitchRad)
+        );
     }
-    
-    private boolean isMultishotCrossbow(ItemStack item)
-    {
-        if(item == null || crossbow == null || multishot == null)
-        {
+
+    private boolean isMultishotCrossbow(ItemStack item) {
+        if (item == null || crossbow == null || multishot == null) {
             return false;
         }
-    
-        return item.getType() == crossbow && item.getEnchantmentLevel(multishot) != 0;
+        return item.getType() == crossbow && item.getEnchantmentLevel(multishot) > 0;
     }
-    
-    private void fixVelocity(Entity entity, Vector direction)
-    {
-        double current = entity.getVelocity().length();
-        entity.setVelocity(direction.clone().normalize().multiply(current));
+
+    private void fixVelocity(Entity entity, Vector direction) {
+        entity.setVelocity(direction.clone().normalize().multiply(entity.getVelocity().length()));
     }
 }
