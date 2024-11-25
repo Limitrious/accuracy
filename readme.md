@@ -25,7 +25,7 @@ Updated for Minecraft **1.21.1** by **Limitrious**.
     - Tridents
     - Splash/Lingering potions
     - Enderpearls
-  - **NEW:** Fully accurate trajectories for bows and normal crossbows, ensuring no recoil or instability.
+  - Fully accurate trajectories for bows and normal crossbows, ensuring no recoil or instability.
 
 - **Advanced Multishot Arrow Behavior**:
   - **NEW:** Multishot crossbows now fire arrows with a controlled spread:
