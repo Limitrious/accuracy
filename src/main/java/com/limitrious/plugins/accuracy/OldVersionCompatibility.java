@@ -1,4 +1,4 @@
-package com.darkender.plugins.accuracy;
+package com.limitrious.plugins.accuracy;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;

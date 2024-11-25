@@ -5,7 +5,7 @@
 
     <groupId>com.limitrious.plugin</groupId>
     <artifactId>accuracy</artifactId>
-    <version>1.0.0</version>
+    <version>2.0</version>
     <name>Accuracy</name>
     <description>A plugin to adjust projectile accuracy in Minecraft.</description>
     <url>https://github.com/Limitrious/accuracy</url>
@@ -21,7 +21,7 @@
         <developer>
             <id>limitrious</id>
             <name>Limitrious</name>
-            <email>limitrious@example.com</email>
+            <email>limitrious@icloud.com</email>
         </developer>
     </developers>
 

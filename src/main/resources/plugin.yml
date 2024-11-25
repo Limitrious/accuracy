@@ -1,5 +1,24 @@
 name: Accuracy
-main: com.darkender.plugins.accuracy.Accuracy
-version: 1.0.0
+main: com.limitrious.plugins.accuracy
+version: 2.0
 author: Limitrious
 api-version: 1.21
+commands:
+  accuracy:
+    description: Enable or disable accuracy adjustments for global or multishot projectiles.
+    usage: /accuracy <global|multishot> <true|false>
+    permission: accuracy.modify
+
+  accuracyreload:
+    description: Reload the Accuracy plugin configuration.
+    usage: /accuracyreload
+    permission: accuracy.reload
+
+permissions:
+  accuracy.modify:
+    description: Allows enabling or disabling accuracy adjustments.
+    default: op
+
+  accuracy.reload:
+    description: Allows reloading the Accuracy plugin configuration.
+    default: op
