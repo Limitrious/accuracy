@@ -3,7 +3,7 @@
 ### About
 The **Accuracy** plugin is a lightweight and efficient tool for Minecraft servers that enhances projectile behavior. It ensures **precise projectile trajectories** for arrows, crossbows, and dispenser-fired projectiles, providing a smooth and consistent experience for players.
 
-Updated for Minecraft **1.21.1** by **Limitrious**.
+Updated for Minecraft **1.21.x** by **Limitrious**.
 
 ---
 
